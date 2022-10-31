@@ -1,0 +1,3445 @@
+   0  $accept : file $end
+
+   1  file : ficheiro
+
+   2  ficheiro : programa
+   3           | modulo
+
+   4  $$1 :
+
+   5  programa : PROGRAM START $$1 corpo END
+
+   6  $$2 :
+
+   7  programa : PROGRAM declaracoes START $$2 corpo END
+
+   8  modulo : MODULE END
+   9         | MODULE declaracoes END
+
+  10  declaracoes : declaracao
+  11              | declaracoes ';' declaracao
+
+  12  declaracao : funcao
+  13             | decltype tipo VARNAME literaltype
+  14             | decltype tipo VARNAME '[' INTEGER ']' literaltype
+
+  15  decltype : qualificador CONST
+  16           | qualificador
+  17           | CONST
+  18           |
+
+  19  literaltype : IEQ literal
+  20              | IEQ inteiro ',' literalist
+  21              | IEQ cadeias
+  22              |
+
+  23  literalist : inteiro
+  24             | literalist ',' inteiro
+
+  25  $$3 :
+
+  26  $$4 :
+
+  27  funcao : FUNCTION functype VARNAME $$3 argsopt $$4 funcdone
+
+  28  funcdone : DONE
+  29           | DO corpo
+
+  30  functype : qualificador tipo
+  31           | tipo
+
+  32  tipo : NUMBER
+  33       | ARRAY
+  34       | STRING
+  35       | VOID
+
+  36  cadeias : iniciador iniciadores
+  37          | STR
+
+  38  iniciador : INTEGER
+  39            | CHAR
+  40            | STR
+
+  41  inteiro : INTEGER
+  42          | '-' INTEGER
+
+  43  iniciadores : iniciador
+  44              | iniciadores iniciador
+
+  45  qualificador : PUBLIC
+  46               | FORWARD
+
+  47  argsopt :
+  48          | args
+
+  49  args : variavel
+  50       | args ';' variavel
+
+  51  variavel : tipo VARNAME '[' INTEGER ']'
+  52           | tipo VARNAME
+
+  53  corpo : varopt instructopt
+
+  54  returns : RETURN
+  55          | RETURN expressao
+  56          |
+
+  57  corpovar : variavel ';'
+  58           | corpovar variavel ';'
+
+  59  varopt :
+  60         | corpovar
+
+  61  literal : INTEGER
+  62          | CHAR
+
+  63  instrucao : IF expressao THEN instructopt elifopt FI
+  64            | IF expressao THEN instructopt elifopt ELSE instructopt FI
+
+  65  $$5 :
+
+  66  $$6 :
+
+  67  instrucao : FOR expressao UNTIL expressao STEP expressao DO $$5 instructopt $$6 DONE
+  68            | expressao ';'
+  69            | expressao '!'
+
+  70  $$7 :
+
+  71  instrucao : $$7 REPEAT
+
+  72  $$8 :
+
+  73  instrucao : $$8 STOP
+  74            | leftvalue '#' expressao ';'
+
+  75  instructopt : returns
+  76              | instrucoes returns
+
+  77  elifopt :
+  78          | ELIF expressao THEN instructopt
+
+  79  instrucoes : instrucao
+  80             | instrucoes instrucao
+
+  81  expressao : VARNAME
+  82            | VARNAME '[' expressao ']'
+  83            | INTEGER
+  84            | cadeias
+  85            | '?'
+  86            | CHAR
+  87            | VARNAME '(' expresionlist ')'
+  88            | expressao '|' expressao
+  89            | expressao '&' expressao
+  90            | expressao '=' expressao
+  91            | expressao '+' expressao
+  92            | expressao '-' expressao
+  93            | expressao '%' expressao
+  94            | expressao '/' expressao
+  95            | expressao GE expressao
+  96            | expressao '>' expressao
+  97            | expressao LE expressao
+  98            | expressao '<' expressao
+  99            | expressao NE expressao
+ 100            | expressao '^' expressao
+ 101            | expressao '*' expressao
+ 102            | leftvalue IEQ expressao
+ 103            | '(' expressao ')'
+ 104            | '&' leftvalue
+ 105            | '~' expressao
+ 106            | '-' expressao
+
+ 107  expresionlist : expressao
+ 108                | expresionlist ',' expressao
+
+ 109  leftvalue : VARNAME
+ 110            | VARNAME '[' expressao ']'
+
+state 0
+	$accept : . file $end  (0)
+
+	MODULE  shift 1
+	PROGRAM  shift 2
+	.  error
+
+	file  goto 3
+	ficheiro  goto 4
+	programa  goto 5
+	modulo  goto 6
+
+
+state 1
+	modulo : MODULE . END  (8)
+	modulo : MODULE . declaracoes END  (9)
+	decltype : .  (18)
+
+	FUNCTION  shift 7
+	CONST  shift 8
+	PUBLIC  shift 9
+	FORWARD  shift 10
+	END  shift 11
+	VOID  reduce 18
+	NUMBER  reduce 18
+	ARRAY  reduce 18
+	STRING  reduce 18
+
+	funcao  goto 12
+	qualificador  goto 13
+	declaracoes  goto 14
+	declaracao  goto 15
+	decltype  goto 16
+
+
+state 2
+	programa : PROGRAM . START $$1 corpo END  (5)
+	programa : PROGRAM . declaracoes START $$2 corpo END  (7)
+	decltype : .  (18)
+
+	FUNCTION  shift 7
+	START  shift 17
+	CONST  shift 8
+	PUBLIC  shift 9
+	FORWARD  shift 10
+	VOID  reduce 18
+	NUMBER  reduce 18
+	ARRAY  reduce 18
+	STRING  reduce 18
+
+	funcao  goto 12
+	qualificador  goto 13
+	declaracoes  goto 18
+	declaracao  goto 15
+	decltype  goto 16
+
+
+state 3
+	$accept : file . $end  (0)
+
+	$end  accept
+
+
+state 4
+	file : ficheiro .  (1)
+
+	.  reduce 1
+
+
+state 5
+	ficheiro : programa .  (2)
+
+	.  reduce 2
+
+
+state 6
+	ficheiro : modulo .  (3)
+
+	.  reduce 3
+
+
+state 7
+	funcao : FUNCTION . functype VARNAME $$3 argsopt $$4 funcdone  (27)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	PUBLIC  shift 9
+	FORWARD  shift 10
+	.  error
+
+	functype  goto 23
+	qualificador  goto 24
+	tipo  goto 25
+
+
+state 8
+	decltype : CONST .  (17)
+
+	.  reduce 17
+
+
+state 9
+	qualificador : PUBLIC .  (45)
+
+	.  reduce 45
+
+
+state 10
+	qualificador : FORWARD .  (46)
+
+	.  reduce 46
+
+
+state 11
+	modulo : MODULE END .  (8)
+
+	.  reduce 8
+
+
+state 12
+	declaracao : funcao .  (12)
+
+	.  reduce 12
+
+
+state 13
+	decltype : qualificador . CONST  (15)
+	decltype : qualificador .  (16)
+
+	CONST  shift 26
+	VOID  reduce 16
+	NUMBER  reduce 16
+	ARRAY  reduce 16
+	STRING  reduce 16
+
+
+state 14
+	modulo : MODULE declaracoes . END  (9)
+	declaracoes : declaracoes . ';' declaracao  (11)
+
+	END  shift 27
+	';'  shift 28
+	.  error
+
+
+state 15
+	declaracoes : declaracao .  (10)
+
+	.  reduce 10
+
+
+state 16
+	declaracao : decltype . tipo VARNAME literaltype  (13)
+	declaracao : decltype . tipo VARNAME '[' INTEGER ']' literaltype  (14)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	.  error
+
+	tipo  goto 29
+
+
+state 17
+	programa : PROGRAM START . $$1 corpo END  (5)
+	$$1 : .  (4)
+
+	.  reduce 4
+
+	$$1  goto 30
+
+
+state 18
+	programa : PROGRAM declaracoes . START $$2 corpo END  (7)
+	declaracoes : declaracoes . ';' declaracao  (11)
+
+	START  shift 31
+	';'  shift 28
+	.  error
+
+
+state 19
+	tipo : VOID .  (35)
+
+	.  reduce 35
+
+
+state 20
+	tipo : NUMBER .  (32)
+
+	.  reduce 32
+
+
+state 21
+	tipo : ARRAY .  (33)
+
+	.  reduce 33
+
+
+state 22
+	tipo : STRING .  (34)
+
+	.  reduce 34
+
+
+state 23
+	funcao : FUNCTION functype . VARNAME $$3 argsopt $$4 funcdone  (27)
+
+	VARNAME  shift 32
+	.  error
+
+
+state 24
+	functype : qualificador . tipo  (30)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	.  error
+
+	tipo  goto 33
+
+
+state 25
+	functype : tipo .  (31)
+
+	.  reduce 31
+
+
+state 26
+	decltype : qualificador CONST .  (15)
+
+	.  reduce 15
+
+
+state 27
+	modulo : MODULE declaracoes END .  (9)
+
+	.  reduce 9
+
+
+state 28
+	declaracoes : declaracoes ';' . declaracao  (11)
+	decltype : .  (18)
+
+	FUNCTION  shift 7
+	CONST  shift 8
+	PUBLIC  shift 9
+	FORWARD  shift 10
+	VOID  reduce 18
+	NUMBER  reduce 18
+	ARRAY  reduce 18
+	STRING  reduce 18
+
+	funcao  goto 12
+	qualificador  goto 13
+	declaracao  goto 34
+	decltype  goto 16
+
+
+state 29
+	declaracao : decltype tipo . VARNAME literaltype  (13)
+	declaracao : decltype tipo . VARNAME '[' INTEGER ']' literaltype  (14)
+
+	VARNAME  shift 35
+	.  error
+
+
+state 30
+	programa : PROGRAM START $$1 . corpo END  (5)
+	varopt : .  (59)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	INTEGER  reduce 59
+	CHAR  reduce 59
+	VARNAME  reduce 59
+	STR  reduce 59
+	IF  reduce 59
+	FOR  reduce 59
+	END  reduce 59
+	REPEAT  reduce 59
+	STOP  reduce 59
+	RETURN  reduce 59
+	'-'  reduce 59
+	'&'  reduce 59
+	'('  reduce 59
+	'~'  reduce 59
+	'?'  reduce 59
+
+	variavel  goto 36
+	corpo  goto 37
+	corpovar  goto 38
+	tipo  goto 39
+	varopt  goto 40
+
+
+state 31
+	programa : PROGRAM declaracoes START . $$2 corpo END  (7)
+	$$2 : .  (6)
+
+	.  reduce 6
+
+	$$2  goto 41
+
+
+state 32
+	funcao : FUNCTION functype VARNAME . $$3 argsopt $$4 funcdone  (27)
+	$$3 : .  (25)
+
+	.  reduce 25
+
+	$$3  goto 42
+
+
+state 33
+	functype : qualificador tipo .  (30)
+
+	.  reduce 30
+
+
+state 34
+	declaracoes : declaracoes ';' declaracao .  (11)
+
+	.  reduce 11
+
+
+state 35
+	declaracao : decltype tipo VARNAME . literaltype  (13)
+	declaracao : decltype tipo VARNAME . '[' INTEGER ']' literaltype  (14)
+	literaltype : .  (22)
+
+	IEQ  shift 43
+	'['  shift 44
+	START  reduce 22
+	END  reduce 22
+	';'  reduce 22
+
+	literaltype  goto 45
+
+
+state 36
+	corpovar : variavel . ';'  (57)
+
+	';'  shift 46
+	.  error
+
+
+state 37
+	programa : PROGRAM START $$1 corpo . END  (5)
+
+	END  shift 47
+	.  error
+
+
+state 38
+	corpovar : corpovar . variavel ';'  (58)
+	varopt : corpovar .  (60)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	INTEGER  reduce 60
+	CHAR  reduce 60
+	VARNAME  reduce 60
+	STR  reduce 60
+	START  reduce 60
+	IF  reduce 60
+	FOR  reduce 60
+	END  reduce 60
+	REPEAT  reduce 60
+	STOP  reduce 60
+	RETURN  reduce 60
+	'-'  reduce 60
+	'&'  reduce 60
+	'('  reduce 60
+	'~'  reduce 60
+	'?'  reduce 60
+	';'  reduce 60
+
+	variavel  goto 48
+	tipo  goto 39
+
+
+state 39
+	variavel : tipo . VARNAME '[' INTEGER ']'  (51)
+	variavel : tipo . VARNAME  (52)
+
+	VARNAME  shift 49
+	.  error
+
+
+state 40
+	corpo : varopt . instructopt  (53)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	START  reduce 56
+	END  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+	';'  reduce 56
+
+	expressao  goto 62
+	returns  goto 63
+	instrucoes  goto 64
+	instructopt  goto 65
+	instrucao  goto 66
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 41
+	programa : PROGRAM declaracoes START $$2 . corpo END  (7)
+	varopt : .  (59)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	INTEGER  reduce 59
+	CHAR  reduce 59
+	VARNAME  reduce 59
+	STR  reduce 59
+	IF  reduce 59
+	FOR  reduce 59
+	END  reduce 59
+	REPEAT  reduce 59
+	STOP  reduce 59
+	RETURN  reduce 59
+	'-'  reduce 59
+	'&'  reduce 59
+	'('  reduce 59
+	'~'  reduce 59
+	'?'  reduce 59
+
+	variavel  goto 36
+	corpo  goto 72
+	corpovar  goto 38
+	tipo  goto 39
+	varopt  goto 40
+
+
+state 42
+	funcao : FUNCTION functype VARNAME $$3 . argsopt $$4 funcdone  (27)
+	argsopt : .  (47)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	DO  reduce 47
+	DONE  reduce 47
+
+	args  goto 73
+	argsopt  goto 74
+	variavel  goto 75
+	tipo  goto 39
+
+
+state 43
+	literaltype : IEQ . literal  (19)
+	literaltype : IEQ . inteiro ',' literalist  (20)
+	literaltype : IEQ . cadeias  (21)
+
+	INTEGER  shift 76
+	CHAR  shift 77
+	STR  shift 53
+	'-'  shift 78
+	.  error
+
+	literal  goto 79
+	cadeias  goto 80
+	iniciador  goto 69
+	inteiro  goto 81
+
+
+state 44
+	declaracao : decltype tipo VARNAME '[' . INTEGER ']' literaltype  (14)
+
+	INTEGER  shift 82
+	.  error
+
+
+state 45
+	declaracao : decltype tipo VARNAME literaltype .  (13)
+
+	.  reduce 13
+
+
+state 46
+	corpovar : variavel ';' .  (57)
+
+	.  reduce 57
+
+
+state 47
+	programa : PROGRAM START $$1 corpo END .  (5)
+
+	.  reduce 5
+
+
+state 48
+	corpovar : corpovar variavel . ';'  (58)
+
+	';'  shift 83
+	.  error
+
+
+state 49
+	variavel : tipo VARNAME . '[' INTEGER ']'  (51)
+	variavel : tipo VARNAME .  (52)
+
+	'['  shift 84
+	DO  reduce 52
+	DONE  reduce 52
+	';'  reduce 52
+
+
+state 50
+	iniciador : INTEGER .  (38)
+	expressao : INTEGER .  (83)
+
+	INTEGER  reduce 38
+	CHAR  reduce 38
+	STR  reduce 38
+	START  reduce 83
+	FI  reduce 83
+	THEN  reduce 83
+	ELSE  reduce 83
+	ELIF  reduce 83
+	END  reduce 83
+	UNTIL  reduce 83
+	STEP  reduce 83
+	DO  reduce 83
+	DONE  reduce 83
+	GE  reduce 83
+	LE  reduce 83
+	NE  reduce 83
+	'^'  reduce 83
+	'>'  reduce 83
+	'<'  reduce 83
+	'='  reduce 83
+	'+'  reduce 83
+	'-'  reduce 83
+	'*'  reduce 83
+	'/'  reduce 83
+	'%'  reduce 83
+	'&'  reduce 83
+	'|'  reduce 83
+	')'  reduce 83
+	']'  reduce 83
+	';'  reduce 83
+	','  reduce 83
+	'!'  reduce 83
+
+
+state 51
+	iniciador : CHAR .  (39)
+	expressao : CHAR .  (86)
+
+	INTEGER  reduce 39
+	CHAR  reduce 39
+	STR  reduce 39
+	START  reduce 86
+	FI  reduce 86
+	THEN  reduce 86
+	ELSE  reduce 86
+	ELIF  reduce 86
+	END  reduce 86
+	UNTIL  reduce 86
+	STEP  reduce 86
+	DO  reduce 86
+	DONE  reduce 86
+	GE  reduce 86
+	LE  reduce 86
+	NE  reduce 86
+	'^'  reduce 86
+	'>'  reduce 86
+	'<'  reduce 86
+	'='  reduce 86
+	'+'  reduce 86
+	'-'  reduce 86
+	'*'  reduce 86
+	'/'  reduce 86
+	'%'  reduce 86
+	'&'  reduce 86
+	'|'  reduce 86
+	')'  reduce 86
+	']'  reduce 86
+	';'  reduce 86
+	','  reduce 86
+	'!'  reduce 86
+
+
+state 52
+	expressao : VARNAME .  (81)
+	expressao : VARNAME . '[' expressao ']'  (82)
+	expressao : VARNAME . '(' expresionlist ')'  (87)
+	leftvalue : VARNAME .  (109)
+	leftvalue : VARNAME . '[' expressao ']'  (110)
+
+	'('  shift 85
+	'['  shift 86
+	START  reduce 81
+	FI  reduce 81
+	THEN  reduce 81
+	ELSE  reduce 81
+	ELIF  reduce 81
+	END  reduce 81
+	UNTIL  reduce 81
+	STEP  reduce 81
+	DO  reduce 81
+	DONE  reduce 81
+	GE  reduce 81
+	LE  reduce 81
+	NE  reduce 81
+	'^'  reduce 81
+	IEQ  reduce 109
+	'>'  reduce 81
+	'<'  reduce 81
+	'='  reduce 81
+	'+'  reduce 81
+	'-'  reduce 81
+	'*'  reduce 81
+	'/'  reduce 81
+	'%'  reduce 81
+	'&'  reduce 81
+	'|'  reduce 81
+	')'  reduce 81
+	']'  reduce 81
+	';'  reduce 81
+	','  reduce 81
+	'!'  reduce 81
+	'#'  reduce 109
+
+
+state 53
+	cadeias : STR .  (37)
+	iniciador : STR .  (40)
+
+	INTEGER  reduce 40
+	CHAR  reduce 40
+	STR  reduce 40
+	START  reduce 37
+	FI  reduce 37
+	THEN  reduce 37
+	ELSE  reduce 37
+	ELIF  reduce 37
+	END  reduce 37
+	UNTIL  reduce 37
+	STEP  reduce 37
+	DO  reduce 37
+	DONE  reduce 37
+	GE  reduce 37
+	LE  reduce 37
+	NE  reduce 37
+	'^'  reduce 37
+	'>'  reduce 37
+	'<'  reduce 37
+	'='  reduce 37
+	'+'  reduce 37
+	'-'  reduce 37
+	'*'  reduce 37
+	'/'  reduce 37
+	'%'  reduce 37
+	'&'  reduce 37
+	'|'  reduce 37
+	')'  reduce 37
+	']'  reduce 37
+	';'  reduce 37
+	','  reduce 37
+	'!'  reduce 37
+
+
+state 54
+	instrucao : IF . expressao THEN instructopt elifopt FI  (63)
+	instrucao : IF . expressao THEN instructopt elifopt ELSE instructopt FI  (64)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 87
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 55
+	instrucao : FOR . expressao UNTIL expressao STEP expressao DO $$5 instructopt $$6 DONE  (67)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 89
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 56
+	returns : RETURN .  (54)
+	returns : RETURN . expressao  (55)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	START  reduce 54
+	FI  reduce 54
+	ELSE  reduce 54
+	ELIF  reduce 54
+	END  reduce 54
+	DONE  reduce 54
+	';'  reduce 54
+
+	expressao  goto 90
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 57
+	expressao : '-' . expressao  (106)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 91
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 58
+	expressao : '&' . leftvalue  (104)
+
+	VARNAME  shift 92
+	.  error
+
+	leftvalue  goto 93
+
+
+state 59
+	expressao : '(' . expressao ')'  (103)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 94
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 60
+	expressao : '~' . expressao  (105)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 95
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 61
+	expressao : '?' .  (85)
+
+	.  reduce 85
+
+
+state 62
+	instrucao : expressao . ';'  (68)
+	instrucao : expressao . '!'  (69)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	';'  shift 110
+	'!'  shift 111
+	.  error
+
+
+state 63
+	instructopt : returns .  (75)
+
+	.  reduce 75
+
+
+state 64
+	instructopt : instrucoes . returns  (76)
+	instrucoes : instrucoes . instrucao  (80)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	START  reduce 56
+	FI  reduce 56
+	ELSE  reduce 56
+	ELIF  reduce 56
+	END  reduce 56
+	DONE  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+	';'  reduce 56
+
+	expressao  goto 62
+	returns  goto 112
+	instrucao  goto 113
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 65
+	corpo : varopt instructopt .  (53)
+
+	.  reduce 53
+
+
+state 66
+	instrucoes : instrucao .  (79)
+
+	.  reduce 79
+
+
+state 67
+	instrucao : leftvalue . '#' expressao ';'  (74)
+	expressao : leftvalue . IEQ expressao  (102)
+
+	IEQ  shift 114
+	'#'  shift 115
+	.  error
+
+
+state 68
+	expressao : cadeias .  (84)
+
+	.  reduce 84
+
+
+state 69
+	cadeias : iniciador . iniciadores  (36)
+
+	INTEGER  shift 116
+	CHAR  shift 117
+	STR  shift 118
+	.  error
+
+	iniciadores  goto 119
+	iniciador  goto 120
+
+
+state 70
+	instrucao : $$7 . REPEAT  (71)
+
+	REPEAT  shift 121
+	.  error
+
+
+state 71
+	instrucao : $$8 . STOP  (73)
+
+	STOP  shift 122
+	.  error
+
+
+state 72
+	programa : PROGRAM declaracoes START $$2 corpo . END  (7)
+
+	END  shift 123
+	.  error
+
+
+state 73
+	argsopt : args .  (48)
+	args : args . ';' variavel  (50)
+
+	';'  shift 124
+	DO  reduce 48
+	DONE  reduce 48
+
+
+state 74
+	funcao : FUNCTION functype VARNAME $$3 argsopt . $$4 funcdone  (27)
+	$$4 : .  (26)
+
+	.  reduce 26
+
+	$$4  goto 125
+
+
+state 75
+	args : variavel .  (49)
+
+	.  reduce 49
+
+
+state 76
+	iniciador : INTEGER .  (38)
+	inteiro : INTEGER .  (41)
+	literal : INTEGER .  (61)
+
+	INTEGER  reduce 38
+	CHAR  reduce 38
+	STR  reduce 38
+	START  reduce 61
+	END  reduce 61
+	';'  reduce 61
+	','  reduce 41
+
+
+state 77
+	iniciador : CHAR .  (39)
+	literal : CHAR .  (62)
+
+	INTEGER  reduce 39
+	CHAR  reduce 39
+	STR  reduce 39
+	START  reduce 62
+	END  reduce 62
+	';'  reduce 62
+
+
+state 78
+	inteiro : '-' . INTEGER  (42)
+
+	INTEGER  shift 126
+	.  error
+
+
+state 79
+	literaltype : IEQ literal .  (19)
+
+	.  reduce 19
+
+
+state 80
+	literaltype : IEQ cadeias .  (21)
+
+	.  reduce 21
+
+
+state 81
+	literaltype : IEQ inteiro . ',' literalist  (20)
+
+	','  shift 127
+	.  error
+
+
+state 82
+	declaracao : decltype tipo VARNAME '[' INTEGER . ']' literaltype  (14)
+
+	']'  shift 128
+	.  error
+
+
+state 83
+	corpovar : corpovar variavel ';' .  (58)
+
+	.  reduce 58
+
+
+state 84
+	variavel : tipo VARNAME '[' . INTEGER ']'  (51)
+
+	INTEGER  shift 129
+	.  error
+
+
+state 85
+	expressao : VARNAME '(' . expresionlist ')'  (87)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 130
+	leftvalue  goto 88
+	expresionlist  goto 131
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 86
+	expressao : VARNAME '[' . expressao ']'  (82)
+	leftvalue : VARNAME '[' . expressao ']'  (110)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 132
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 87
+	instrucao : IF expressao . THEN instructopt elifopt FI  (63)
+	instrucao : IF expressao . THEN instructopt elifopt ELSE instructopt FI  (64)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	THEN  shift 133
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	.  error
+
+
+state 88
+	expressao : leftvalue . IEQ expressao  (102)
+
+	IEQ  shift 114
+	.  error
+
+
+state 89
+	instrucao : FOR expressao . UNTIL expressao STEP expressao DO $$5 instructopt $$6 DONE  (67)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	UNTIL  shift 134
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	.  error
+
+
+state 90
+	returns : RETURN expressao .  (55)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 55
+	FI  reduce 55
+	ELSE  reduce 55
+	ELIF  reduce 55
+	END  reduce 55
+	DONE  reduce 55
+	';'  reduce 55
+
+
+state 91
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expressao : '-' expressao .  (106)
+
+	.  reduce 106
+
+
+state 92
+	leftvalue : VARNAME .  (109)
+	leftvalue : VARNAME . '[' expressao ']'  (110)
+
+	'['  shift 135
+	START  reduce 109
+	FI  reduce 109
+	THEN  reduce 109
+	ELSE  reduce 109
+	ELIF  reduce 109
+	END  reduce 109
+	UNTIL  reduce 109
+	STEP  reduce 109
+	DO  reduce 109
+	DONE  reduce 109
+	GE  reduce 109
+	LE  reduce 109
+	NE  reduce 109
+	'^'  reduce 109
+	'>'  reduce 109
+	'<'  reduce 109
+	'='  reduce 109
+	'+'  reduce 109
+	'-'  reduce 109
+	'*'  reduce 109
+	'/'  reduce 109
+	'%'  reduce 109
+	'&'  reduce 109
+	'|'  reduce 109
+	')'  reduce 109
+	']'  reduce 109
+	';'  reduce 109
+	','  reduce 109
+	'!'  reduce 109
+
+
+state 93
+	expressao : '&' leftvalue .  (104)
+
+	.  reduce 104
+
+
+state 94
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expressao : '(' expressao . ')'  (103)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	')'  shift 136
+	.  error
+
+
+state 95
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expressao : '~' expressao .  (105)
+
+	.  reduce 105
+
+
+state 96
+	expressao : expressao GE . expressao  (95)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 137
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 97
+	expressao : expressao LE . expressao  (97)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 138
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 98
+	expressao : expressao NE . expressao  (99)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 139
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 99
+	expressao : expressao '^' . expressao  (100)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 140
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 100
+	expressao : expressao '>' . expressao  (96)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 141
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 101
+	expressao : expressao '<' . expressao  (98)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 142
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 102
+	expressao : expressao '=' . expressao  (90)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 143
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 103
+	expressao : expressao '+' . expressao  (91)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 144
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 104
+	expressao : expressao '-' . expressao  (92)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 145
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 105
+	expressao : expressao '*' . expressao  (101)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 146
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 106
+	expressao : expressao '/' . expressao  (94)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 147
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 107
+	expressao : expressao '%' . expressao  (93)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 148
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 108
+	expressao : expressao '&' . expressao  (89)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 149
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 109
+	expressao : expressao '|' . expressao  (88)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 150
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 110
+	instrucao : expressao ';' .  (68)
+
+	.  reduce 68
+
+
+state 111
+	instrucao : expressao '!' .  (69)
+
+	.  reduce 69
+
+
+state 112
+	instructopt : instrucoes returns .  (76)
+
+	.  reduce 76
+
+
+state 113
+	instrucoes : instrucoes instrucao .  (80)
+
+	.  reduce 80
+
+
+state 114
+	expressao : leftvalue IEQ . expressao  (102)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 151
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 115
+	instrucao : leftvalue '#' . expressao ';'  (74)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 152
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 116
+	iniciador : INTEGER .  (38)
+
+	.  reduce 38
+
+
+state 117
+	iniciador : CHAR .  (39)
+
+	.  reduce 39
+
+
+state 118
+	iniciador : STR .  (40)
+
+	.  reduce 40
+
+
+state 119
+	cadeias : iniciador iniciadores .  (36)
+	iniciadores : iniciadores . iniciador  (44)
+
+	INTEGER  shift 116
+	CHAR  shift 117
+	STR  shift 118
+	START  reduce 36
+	FI  reduce 36
+	THEN  reduce 36
+	ELSE  reduce 36
+	ELIF  reduce 36
+	END  reduce 36
+	UNTIL  reduce 36
+	STEP  reduce 36
+	DO  reduce 36
+	DONE  reduce 36
+	GE  reduce 36
+	LE  reduce 36
+	NE  reduce 36
+	'^'  reduce 36
+	'>'  reduce 36
+	'<'  reduce 36
+	'='  reduce 36
+	'+'  reduce 36
+	'-'  reduce 36
+	'*'  reduce 36
+	'/'  reduce 36
+	'%'  reduce 36
+	'&'  reduce 36
+	'|'  reduce 36
+	')'  reduce 36
+	']'  reduce 36
+	';'  reduce 36
+	','  reduce 36
+	'!'  reduce 36
+
+	iniciador  goto 153
+
+
+state 120
+	iniciadores : iniciador .  (43)
+
+	.  reduce 43
+
+
+state 121
+	instrucao : $$7 REPEAT .  (71)
+
+	.  reduce 71
+
+
+state 122
+	instrucao : $$8 STOP .  (73)
+
+	.  reduce 73
+
+
+state 123
+	programa : PROGRAM declaracoes START $$2 corpo END .  (7)
+
+	.  reduce 7
+
+
+state 124
+	args : args ';' . variavel  (50)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	.  error
+
+	variavel  goto 154
+	tipo  goto 39
+
+
+state 125
+	funcao : FUNCTION functype VARNAME $$3 argsopt $$4 . funcdone  (27)
+
+	DO  shift 155
+	DONE  shift 156
+	.  error
+
+	funcdone  goto 157
+
+
+state 126
+	inteiro : '-' INTEGER .  (42)
+
+	.  reduce 42
+
+
+state 127
+	literaltype : IEQ inteiro ',' . literalist  (20)
+
+	INTEGER  shift 158
+	'-'  shift 78
+	.  error
+
+	literalist  goto 159
+	inteiro  goto 160
+
+
+state 128
+	declaracao : decltype tipo VARNAME '[' INTEGER ']' . literaltype  (14)
+	literaltype : .  (22)
+
+	IEQ  shift 43
+	START  reduce 22
+	END  reduce 22
+	';'  reduce 22
+
+	literaltype  goto 161
+
+
+state 129
+	variavel : tipo VARNAME '[' INTEGER . ']'  (51)
+
+	']'  shift 162
+	.  error
+
+
+state 130
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expresionlist : expressao .  (107)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	')'  reduce 107
+	','  reduce 107
+
+
+state 131
+	expressao : VARNAME '(' expresionlist . ')'  (87)
+	expresionlist : expresionlist . ',' expressao  (108)
+
+	')'  shift 163
+	','  shift 164
+	.  error
+
+
+state 132
+	expressao : VARNAME '[' expressao . ']'  (82)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	leftvalue : VARNAME '[' expressao . ']'  (110)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	']'  shift 165
+	.  error
+
+
+state 133
+	instrucao : IF expressao THEN . instructopt elifopt FI  (63)
+	instrucao : IF expressao THEN . instructopt elifopt ELSE instructopt FI  (64)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	FI  reduce 56
+	ELSE  reduce 56
+	ELIF  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+
+	expressao  goto 62
+	returns  goto 63
+	instrucoes  goto 64
+	instructopt  goto 166
+	instrucao  goto 66
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 134
+	instrucao : FOR expressao UNTIL . expressao STEP expressao DO $$5 instructopt $$6 DONE  (67)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 167
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 135
+	leftvalue : VARNAME '[' . expressao ']'  (110)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 168
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 136
+	expressao : '(' expressao ')' .  (103)
+
+	.  reduce 103
+
+
+state 137
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao GE expressao .  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 95
+	FI  reduce 95
+	THEN  reduce 95
+	ELSE  reduce 95
+	ELIF  reduce 95
+	END  reduce 95
+	UNTIL  reduce 95
+	STEP  reduce 95
+	DO  reduce 95
+	DONE  reduce 95
+	GE  reduce 95
+	LE  reduce 95
+	NE  reduce 95
+	'^'  reduce 95
+	'>'  reduce 95
+	'<'  reduce 95
+	'='  reduce 95
+	')'  reduce 95
+	']'  reduce 95
+	';'  reduce 95
+	','  reduce 95
+	'!'  reduce 95
+
+
+state 138
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao LE expressao .  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 97
+	FI  reduce 97
+	THEN  reduce 97
+	ELSE  reduce 97
+	ELIF  reduce 97
+	END  reduce 97
+	UNTIL  reduce 97
+	STEP  reduce 97
+	DO  reduce 97
+	DONE  reduce 97
+	GE  reduce 97
+	LE  reduce 97
+	NE  reduce 97
+	'^'  reduce 97
+	'>'  reduce 97
+	'<'  reduce 97
+	'='  reduce 97
+	')'  reduce 97
+	']'  reduce 97
+	';'  reduce 97
+	','  reduce 97
+	'!'  reduce 97
+
+
+state 139
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao NE expressao .  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 99
+	FI  reduce 99
+	THEN  reduce 99
+	ELSE  reduce 99
+	ELIF  reduce 99
+	END  reduce 99
+	UNTIL  reduce 99
+	STEP  reduce 99
+	DO  reduce 99
+	DONE  reduce 99
+	GE  reduce 99
+	LE  reduce 99
+	NE  reduce 99
+	'^'  reduce 99
+	'>'  reduce 99
+	'<'  reduce 99
+	'='  reduce 99
+	')'  reduce 99
+	']'  reduce 99
+	';'  reduce 99
+	','  reduce 99
+	'!'  reduce 99
+
+
+state 140
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao '^' expressao .  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 100
+	FI  reduce 100
+	THEN  reduce 100
+	ELSE  reduce 100
+	ELIF  reduce 100
+	END  reduce 100
+	UNTIL  reduce 100
+	STEP  reduce 100
+	DO  reduce 100
+	DONE  reduce 100
+	')'  reduce 100
+	']'  reduce 100
+	';'  reduce 100
+	','  reduce 100
+	'!'  reduce 100
+
+
+state 141
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao '>' expressao .  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 96
+	FI  reduce 96
+	THEN  reduce 96
+	ELSE  reduce 96
+	ELIF  reduce 96
+	END  reduce 96
+	UNTIL  reduce 96
+	STEP  reduce 96
+	DO  reduce 96
+	DONE  reduce 96
+	GE  reduce 96
+	LE  reduce 96
+	NE  reduce 96
+	'^'  reduce 96
+	'>'  reduce 96
+	'<'  reduce 96
+	'='  reduce 96
+	')'  reduce 96
+	']'  reduce 96
+	';'  reduce 96
+	','  reduce 96
+	'!'  reduce 96
+
+
+state 142
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao '<' expressao .  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 98
+	FI  reduce 98
+	THEN  reduce 98
+	ELSE  reduce 98
+	ELIF  reduce 98
+	END  reduce 98
+	UNTIL  reduce 98
+	STEP  reduce 98
+	DO  reduce 98
+	DONE  reduce 98
+	GE  reduce 98
+	LE  reduce 98
+	NE  reduce 98
+	'^'  reduce 98
+	'>'  reduce 98
+	'<'  reduce 98
+	'='  reduce 98
+	')'  reduce 98
+	']'  reduce 98
+	';'  reduce 98
+	','  reduce 98
+	'!'  reduce 98
+
+
+state 143
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao '=' expressao .  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 90
+	FI  reduce 90
+	THEN  reduce 90
+	ELSE  reduce 90
+	ELIF  reduce 90
+	END  reduce 90
+	UNTIL  reduce 90
+	STEP  reduce 90
+	DO  reduce 90
+	DONE  reduce 90
+	GE  reduce 90
+	LE  reduce 90
+	NE  reduce 90
+	'^'  reduce 90
+	'>'  reduce 90
+	'<'  reduce 90
+	'='  reduce 90
+	')'  reduce 90
+	']'  reduce 90
+	';'  reduce 90
+	','  reduce 90
+	'!'  reduce 90
+
+
+state 144
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao '+' expressao .  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 91
+	FI  reduce 91
+	THEN  reduce 91
+	ELSE  reduce 91
+	ELIF  reduce 91
+	END  reduce 91
+	UNTIL  reduce 91
+	STEP  reduce 91
+	DO  reduce 91
+	DONE  reduce 91
+	GE  reduce 91
+	LE  reduce 91
+	NE  reduce 91
+	'^'  reduce 91
+	'>'  reduce 91
+	'<'  reduce 91
+	'='  reduce 91
+	'+'  reduce 91
+	'-'  reduce 91
+	'*'  reduce 91
+	'/'  reduce 91
+	'%'  reduce 91
+	')'  reduce 91
+	']'  reduce 91
+	';'  reduce 91
+	','  reduce 91
+	'!'  reduce 91
+
+
+state 145
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao '-' expressao .  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 92
+	FI  reduce 92
+	THEN  reduce 92
+	ELSE  reduce 92
+	ELIF  reduce 92
+	END  reduce 92
+	UNTIL  reduce 92
+	STEP  reduce 92
+	DO  reduce 92
+	DONE  reduce 92
+	GE  reduce 92
+	LE  reduce 92
+	NE  reduce 92
+	'^'  reduce 92
+	'>'  reduce 92
+	'<'  reduce 92
+	'='  reduce 92
+	'+'  reduce 92
+	'-'  reduce 92
+	'*'  reduce 92
+	'/'  reduce 92
+	'%'  reduce 92
+	')'  reduce 92
+	']'  reduce 92
+	';'  reduce 92
+	','  reduce 92
+	'!'  reduce 92
+
+
+state 146
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expressao : expressao '*' expressao .  (101)
+
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 101
+	FI  reduce 101
+	THEN  reduce 101
+	ELSE  reduce 101
+	ELIF  reduce 101
+	END  reduce 101
+	UNTIL  reduce 101
+	STEP  reduce 101
+	DO  reduce 101
+	DONE  reduce 101
+	GE  reduce 101
+	LE  reduce 101
+	NE  reduce 101
+	'^'  reduce 101
+	'>'  reduce 101
+	'<'  reduce 101
+	'='  reduce 101
+	'+'  reduce 101
+	'-'  reduce 101
+	'*'  reduce 101
+	'/'  reduce 101
+	'%'  reduce 101
+	')'  reduce 101
+	']'  reduce 101
+	';'  reduce 101
+	','  reduce 101
+	'!'  reduce 101
+
+
+state 147
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao '/' expressao .  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 94
+	FI  reduce 94
+	THEN  reduce 94
+	ELSE  reduce 94
+	ELIF  reduce 94
+	END  reduce 94
+	UNTIL  reduce 94
+	STEP  reduce 94
+	DO  reduce 94
+	DONE  reduce 94
+	GE  reduce 94
+	LE  reduce 94
+	NE  reduce 94
+	'^'  reduce 94
+	'>'  reduce 94
+	'<'  reduce 94
+	'='  reduce 94
+	'+'  reduce 94
+	'-'  reduce 94
+	'*'  reduce 94
+	'/'  reduce 94
+	'%'  reduce 94
+	')'  reduce 94
+	']'  reduce 94
+	';'  reduce 94
+	','  reduce 94
+	'!'  reduce 94
+
+
+state 148
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao '%' expressao .  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 93
+	FI  reduce 93
+	THEN  reduce 93
+	ELSE  reduce 93
+	ELIF  reduce 93
+	END  reduce 93
+	UNTIL  reduce 93
+	STEP  reduce 93
+	DO  reduce 93
+	DONE  reduce 93
+	GE  reduce 93
+	LE  reduce 93
+	NE  reduce 93
+	'^'  reduce 93
+	'>'  reduce 93
+	'<'  reduce 93
+	'='  reduce 93
+	'+'  reduce 93
+	'-'  reduce 93
+	'*'  reduce 93
+	'/'  reduce 93
+	'%'  reduce 93
+	')'  reduce 93
+	']'  reduce 93
+	';'  reduce 93
+	','  reduce 93
+	'!'  reduce 93
+
+
+state 149
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao '&' expressao .  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	.  reduce 89
+
+
+state 150
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao '|' expressao .  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	.  reduce 88
+
+
+state 151
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expressao : leftvalue IEQ expressao .  (102)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	START  reduce 102
+	FI  reduce 102
+	THEN  reduce 102
+	ELSE  reduce 102
+	ELIF  reduce 102
+	END  reduce 102
+	UNTIL  reduce 102
+	STEP  reduce 102
+	DO  reduce 102
+	DONE  reduce 102
+	')'  reduce 102
+	']'  reduce 102
+	';'  reduce 102
+	','  reduce 102
+	'!'  reduce 102
+
+
+state 152
+	instrucao : leftvalue '#' expressao . ';'  (74)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	';'  shift 169
+	.  error
+
+
+state 153
+	iniciadores : iniciadores iniciador .  (44)
+
+	.  reduce 44
+
+
+state 154
+	args : args ';' variavel .  (50)
+
+	.  reduce 50
+
+
+state 155
+	funcdone : DO . corpo  (29)
+	varopt : .  (59)
+
+	VOID  shift 19
+	NUMBER  shift 20
+	ARRAY  shift 21
+	STRING  shift 22
+	INTEGER  reduce 59
+	CHAR  reduce 59
+	VARNAME  reduce 59
+	STR  reduce 59
+	START  reduce 59
+	IF  reduce 59
+	FOR  reduce 59
+	END  reduce 59
+	REPEAT  reduce 59
+	STOP  reduce 59
+	RETURN  reduce 59
+	'-'  reduce 59
+	'&'  reduce 59
+	'('  reduce 59
+	'~'  reduce 59
+	'?'  reduce 59
+	';'  reduce 59
+
+	variavel  goto 36
+	corpo  goto 170
+	corpovar  goto 38
+	tipo  goto 39
+	varopt  goto 40
+
+
+state 156
+	funcdone : DONE .  (28)
+
+	.  reduce 28
+
+
+state 157
+	funcao : FUNCTION functype VARNAME $$3 argsopt $$4 funcdone .  (27)
+
+	.  reduce 27
+
+
+state 158
+	inteiro : INTEGER .  (41)
+
+	.  reduce 41
+
+
+state 159
+	literaltype : IEQ inteiro ',' literalist .  (20)
+	literalist : literalist . ',' inteiro  (24)
+
+	','  shift 171
+	START  reduce 20
+	END  reduce 20
+	';'  reduce 20
+
+
+state 160
+	literalist : inteiro .  (23)
+
+	.  reduce 23
+
+
+state 161
+	declaracao : decltype tipo VARNAME '[' INTEGER ']' literaltype .  (14)
+
+	.  reduce 14
+
+
+state 162
+	variavel : tipo VARNAME '[' INTEGER ']' .  (51)
+
+	.  reduce 51
+
+
+state 163
+	expressao : VARNAME '(' expresionlist ')' .  (87)
+
+	.  reduce 87
+
+
+state 164
+	expresionlist : expresionlist ',' . expressao  (108)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 172
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 165
+	expressao : VARNAME '[' expressao ']' .  (82)
+	leftvalue : VARNAME '[' expressao ']' .  (110)
+
+	START  reduce 82
+	FI  reduce 82
+	THEN  reduce 82
+	ELSE  reduce 82
+	ELIF  reduce 82
+	END  reduce 82
+	UNTIL  reduce 82
+	STEP  reduce 82
+	DO  reduce 82
+	DONE  reduce 82
+	GE  reduce 82
+	LE  reduce 82
+	NE  reduce 82
+	'^'  reduce 82
+	IEQ  reduce 110
+	'>'  reduce 82
+	'<'  reduce 82
+	'='  reduce 82
+	'+'  reduce 82
+	'-'  reduce 82
+	'*'  reduce 82
+	'/'  reduce 82
+	'%'  reduce 82
+	'&'  reduce 82
+	'|'  reduce 82
+	')'  reduce 82
+	']'  reduce 82
+	';'  reduce 82
+	','  reduce 82
+	'!'  reduce 82
+	'#'  reduce 110
+
+
+state 166
+	instrucao : IF expressao THEN instructopt . elifopt FI  (63)
+	instrucao : IF expressao THEN instructopt . elifopt ELSE instructopt FI  (64)
+	elifopt : .  (77)
+
+	ELIF  shift 173
+	FI  reduce 77
+	ELSE  reduce 77
+
+	elifopt  goto 174
+
+
+state 167
+	instrucao : FOR expressao UNTIL expressao . STEP expressao DO $$5 instructopt $$6 DONE  (67)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	STEP  shift 175
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	.  error
+
+
+state 168
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	leftvalue : VARNAME '[' expressao . ']'  (110)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	']'  shift 176
+	.  error
+
+
+state 169
+	instrucao : leftvalue '#' expressao ';' .  (74)
+
+	.  reduce 74
+
+
+state 170
+	funcdone : DO corpo .  (29)
+
+	.  reduce 29
+
+
+state 171
+	literalist : literalist ',' . inteiro  (24)
+
+	INTEGER  shift 158
+	'-'  shift 78
+	.  error
+
+	inteiro  goto 177
+
+
+state 172
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+	expresionlist : expresionlist ',' expressao .  (108)
+
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	')'  reduce 108
+	','  reduce 108
+
+
+state 173
+	elifopt : ELIF . expressao THEN instructopt  (78)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 178
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 174
+	instrucao : IF expressao THEN instructopt elifopt . FI  (63)
+	instrucao : IF expressao THEN instructopt elifopt . ELSE instructopt FI  (64)
+
+	FI  shift 179
+	ELSE  shift 180
+	.  error
+
+
+state 175
+	instrucao : FOR expressao UNTIL expressao STEP . expressao DO $$5 instructopt $$6 DONE  (67)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	.  error
+
+	expressao  goto 181
+	leftvalue  goto 88
+	cadeias  goto 68
+	iniciador  goto 69
+
+
+state 176
+	leftvalue : VARNAME '[' expressao ']' .  (110)
+
+	.  reduce 110
+
+
+state 177
+	literalist : literalist ',' inteiro .  (24)
+
+	.  reduce 24
+
+
+state 178
+	elifopt : ELIF expressao . THEN instructopt  (78)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	THEN  shift 182
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	.  error
+
+
+state 179
+	instrucao : IF expressao THEN instructopt elifopt FI .  (63)
+
+	.  reduce 63
+
+
+state 180
+	instrucao : IF expressao THEN instructopt elifopt ELSE . instructopt FI  (64)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	FI  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+
+	expressao  goto 62
+	returns  goto 63
+	instrucoes  goto 64
+	instructopt  goto 183
+	instrucao  goto 66
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 181
+	instrucao : FOR expressao UNTIL expressao STEP expressao . DO $$5 instructopt $$6 DONE  (67)
+	expressao : expressao . '|' expressao  (88)
+	expressao : expressao . '&' expressao  (89)
+	expressao : expressao . '=' expressao  (90)
+	expressao : expressao . '+' expressao  (91)
+	expressao : expressao . '-' expressao  (92)
+	expressao : expressao . '%' expressao  (93)
+	expressao : expressao . '/' expressao  (94)
+	expressao : expressao . GE expressao  (95)
+	expressao : expressao . '>' expressao  (96)
+	expressao : expressao . LE expressao  (97)
+	expressao : expressao . '<' expressao  (98)
+	expressao : expressao . NE expressao  (99)
+	expressao : expressao . '^' expressao  (100)
+	expressao : expressao . '*' expressao  (101)
+
+	DO  shift 184
+	GE  shift 96
+	LE  shift 97
+	NE  shift 98
+	'^'  shift 99
+	'>'  shift 100
+	'<'  shift 101
+	'='  shift 102
+	'+'  shift 103
+	'-'  shift 104
+	'*'  shift 105
+	'/'  shift 106
+	'%'  shift 107
+	'&'  shift 108
+	'|'  shift 109
+	.  error
+
+
+state 182
+	elifopt : ELIF expressao THEN . instructopt  (78)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	FI  reduce 56
+	ELSE  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+
+	expressao  goto 62
+	returns  goto 63
+	instrucoes  goto 64
+	instructopt  goto 185
+	instrucao  goto 66
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 183
+	instrucao : IF expressao THEN instructopt elifopt ELSE instructopt . FI  (64)
+
+	FI  shift 186
+	.  error
+
+
+state 184
+	instrucao : FOR expressao UNTIL expressao STEP expressao DO . $$5 instructopt $$6 DONE  (67)
+	$$5 : .  (65)
+
+	.  reduce 65
+
+	$$5  goto 187
+
+
+state 185
+	elifopt : ELIF expressao THEN instructopt .  (78)
+
+	.  reduce 78
+
+
+state 186
+	instrucao : IF expressao THEN instructopt elifopt ELSE instructopt FI .  (64)
+
+	.  reduce 64
+
+
+state 187
+	instrucao : FOR expressao UNTIL expressao STEP expressao DO $$5 . instructopt $$6 DONE  (67)
+	returns : .  (56)
+	$$7 : .  (70)
+	$$8 : .  (72)
+
+	INTEGER  shift 50
+	CHAR  shift 51
+	VARNAME  shift 52
+	STR  shift 53
+	IF  shift 54
+	FOR  shift 55
+	RETURN  shift 56
+	'-'  shift 57
+	'&'  shift 58
+	'('  shift 59
+	'~'  shift 60
+	'?'  shift 61
+	DONE  reduce 56
+	REPEAT  reduce 70
+	STOP  reduce 72
+
+	expressao  goto 62
+	returns  goto 63
+	instrucoes  goto 64
+	instructopt  goto 188
+	instrucao  goto 66
+	leftvalue  goto 67
+	cadeias  goto 68
+	iniciador  goto 69
+	$$7  goto 70
+	$$8  goto 71
+
+
+state 188
+	instrucao : FOR expressao UNTIL expressao STEP expressao DO $$5 instructopt . $$6 DONE  (67)
+	$$6 : .  (66)
+
+	.  reduce 66
+
+	$$6  goto 189
+
+
+state 189
+	instrucao : FOR expressao UNTIL expressao STEP expressao DO $$5 instructopt $$6 . DONE  (67)
+
+	DONE  shift 190
+	.  error
+
+
+state 190
+	instrucao : FOR expressao UNTIL expressao STEP expressao DO $$5 instructopt $$6 DONE .  (67)
+
+	.  reduce 67
+
+
+122 terminals, 42 nonterminals
+111 grammar rules, 191 states
